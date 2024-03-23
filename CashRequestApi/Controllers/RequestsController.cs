@@ -1,4 +1,5 @@
 ﻿using CashRequestApi.Core.Requests.Commands.CreateRequest;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,10 +17,7 @@ namespace CashRequestApi.Controllers
         [HttpPost]
         public async Task Create([FromBody] CreateRequestCommand request)
         {
-
-            var remoteIpAddress = HttpContext.Connection.RemoteIpAddress;
-
-            request.ClientIpAddress = remoteIpAddress != null && remoteIpAddress.ToString().Equals("::1") ? "127.0.0.1" : remoteIpAddress?.ToString();
+            request.ClientIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
 
             await _mediator.Send(request);
 

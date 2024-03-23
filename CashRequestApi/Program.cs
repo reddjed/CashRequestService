@@ -1,6 +1,9 @@
+using CashRequestApi.Options;
 using CashRequestApi.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MassTransit;
+using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 using Serilog;
 using System.Reflection;
@@ -30,7 +33,7 @@ builder.Services.AddSingleton<ConnectionFactory>(provider =>
     var factory = new ConnectionFactory()
     {
         
-        HostName = "localhost",
+        HostName = "rabbitmq",
         UserName = "guest",
         Password = "guest",
     };
@@ -40,19 +43,27 @@ builder.Services.AddSingleton<ConnectionFactory>(provider =>
 //TODO: i think it should be scoped, check this
 builder.Services.AddSingleton<RabbitMQService>();
 
+builder.Services.AddMassTransit(x => 
+    x.UsingRabbitMq((context, config) =>
+    {
+        config.Host("rabbitmq");
+    }));
+
 //mediator
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
+builder.Services.Configure<RabbitConfig>(builder.Configuration.GetSection(RabbitConfig.Section));
+builder.Services.Configure<RabbitQueuesConfig>(builder.Configuration.GetSection(RabbitQueuesConfig.Section));
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+app.UseSwagger();
+app.UseSwaggerUI();
+//}
 
 app.UseHttpsRedirection();
 
