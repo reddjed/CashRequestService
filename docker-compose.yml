@@ -1,0 +1,60 @@
+name: "cashrequest-containers"
+version: '3.4'
+
+services:
+
+  rabbitmq:
+    container_name: "rabbitmq"
+    image: rabbitmq:3.13.0-management
+    networks:
+    - default-network
+    ports:
+    - 5672:5672
+    - 15672:15672
+    volumes:
+     - "rabbitmq_data:/data"
+
+  # mssql-db:
+  #   container_name: "mssql-db"
+  #   image: mcr.microsoft.com/mssql/server:latest
+  #   ports:
+  #     - "14430:1337"
+  #   volumes:
+  #   - "mssql_data:/var/opt/mssql"
+  #   environment:
+  #     ACCEPT_EULA: "Y"
+  #     SA_PASSWORD: "kerya1337"
+
+  cashrequest-api:
+    container_name: "cashrequest-api"
+    #image: ${DOCKER_REGISTRY-}cashrequestapi
+    networks:
+    - default-network
+    external_links:
+    - rabbitmq 
+    build:
+      context: .
+      dockerfile: CashRequestApi/Dockerfile
+    ports:
+    # - 8080:5001
+    # - 8081:5002
+    # - 443:5003
+    - 5001:8080
+    - 5002:8081
+    - 5003:443
+     
+    environment:
+    - ASPNETCORE_ENVIRONMENT=Development
+    # volumes:
+    #   - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+    #   - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    depends_on:
+    - rabbitmq
+
+volumes:
+    rabbitmq_data:
+    mssql_data:
+    
+networks:
+  default-network:
+   external: true
