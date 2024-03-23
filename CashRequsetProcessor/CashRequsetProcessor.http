@@ -1,0 +1,6 @@
+@CashRequsetProcessor_HostAddress = http://localhost:5001
+
+GET {{CashRequsetProcessor_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
