@@ -1,0 +1,32 @@
+USE [PrivatBankDb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[sp_GetRequestStatusByClientIdAndDepAddress]
+    @ClientId UNIQUEIDENTIFIER,
+    @DepartmentAddress NVARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+	DECLARE @_DepartmentId UNIQUEIDENTIFIER;
+
+	SELECT TOP 1 @_DepartmentId = DepartmentId FROM Deps WHERE DepartmentAddress = @DepartmentAddress;
+    IF @_DepartmentId IS NULL
+    BEGIN
+        RAISERROR('@DepartmentAddress is null', 16, 1);
+        RETURN;
+    END;
+
+    SELECT * FROM Requests
+	INNER JOIN Clients ON Requests.ClientId = Clients.ClientId
+	INNER JOIN Currencies ON Requests.CurrencyId = Currencies.CurrencyId
+	INNER JOIN Deps ON Requests.DepartmentId = Deps.DepartmentId
+    WHERE Requests.ClientId = @ClientId AND Requests.DepartmentId = @_DepartmentId;
+END;
+GO
+

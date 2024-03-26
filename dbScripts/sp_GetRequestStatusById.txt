@@ -1,0 +1,23 @@
+USE [PrivatBankDb]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[sp_GetRequestStatusById]
+    @RequestId UNIQUEIDENTIFIER
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT * FROM Requests
+	INNER JOIN Clients ON Requests.ClientId = Clients.ClientId
+	INNER JOIN Currencies ON Requests.CurrencyId = Currencies.CurrencyId
+	INNER JOIN Deps ON Requests.DepartmentId = Deps.DepartmentId
+    WHERE RequestId = @RequestId;
+END;
+GO
+

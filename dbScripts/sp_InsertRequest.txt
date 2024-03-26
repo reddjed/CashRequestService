@@ -1,0 +1,50 @@
+USE [PrivatBankDb]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[sp_InsertRequest]
+    @ClientId UNIQUEIDENTIFIER,
+    @DepartmentAddress NVARCHAR(255),
+    @Amount DECIMAL(18, 2),
+    @Currency NVARCHAR(3),
+    @Status NVARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @_ClientId UNIQUEIDENTIFIER;
+    DECLARE @_DepartmentId UNIQUEIDENTIFIER;
+    DECLARE @_CurrencyId UNIQUEIDENTIFIER;
+    DECLARE @_RequestId UNIQUEIDENTIFIER;
+
+    SELECT TOP 1 @_ClientId = ClientId FROM Clients WHERE ClientId = @ClientId;
+    IF @_ClientId IS NULL
+    BEGIN
+        RAISERROR('@ClientId is null', 16, 1);
+        RETURN;
+    END;
+
+    SELECT TOP 1 @_DepartmentId = DepartmentId FROM Deps WHERE DepartmentAddress = @DepartmentAddress;
+    IF @_DepartmentId IS NULL
+    BEGIN
+        RAISERROR('@DepartmentAddress is null', 16, 1);
+        RETURN;
+    END;
+
+    SELECT TOP 1 @_CurrencyId = CurrencyId FROM Currencies WHERE Currency = @Currency;
+    IF @_CurrencyId IS NULL
+    BEGIN
+        RAISERROR('@Currency is null', 16, 1);
+        RETURN;
+    END;
+	
+    SET @_RequestId = NEWID();
+    INSERT INTO Requests (RequestId, ClientId, DepartmentId, Amount, CurrencyId, Status)
+    VALUES (@_RequestId, @_ClientId, @_DepartmentId, @Amount, @_CurrencyId, @Status);
+    
+    SELECT @_RequestId AS NewRequestId;
+END;
+GO
