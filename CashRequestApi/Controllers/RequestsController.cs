@@ -1,5 +1,7 @@
 ﻿using CashRequestApi.Core.Requests.Commands.CreateRequest;
-using MassTransit;
+using CashRequestApi.Core.Requests.Queries.GetRequestStatusByClientIdAndDepAddress;
+using CashRequestApi.Core.Requests.Queries.GetRequestStatusById;
+using CashRequestShared.Dto;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,18 +12,42 @@ namespace CashRequestApi.Controllers
     public class RequestsController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ILogger<RequestsController> _logger;
 
-        public RequestsController(IMediator mediator) =>
-        (_mediator) = (mediator);
+        public RequestsController(IMediator mediator, ILogger<RequestsController> logger) =>
+        (_mediator, _logger) = (mediator, logger);
 
-        [HttpPost]
-        public async Task Create([FromBody] CreateRequestCommand request)
+        [HttpGet("{RequestId}")]
+        public async Task<RequestStatusDto> GetRequestById([FromRoute] GetRequestStatusByIdQuery request)
         {
-            request.ClientIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+            // Client ip
+            _logger.LogInformation($"Client IP: {HttpContext.Connection.RemoteIpAddress?.ToString()}");
 
-            await _mediator.Send(request);
+            var res = await _mediator.Send(request);
 
-            return;
+            return res;
         }
+        [HttpPost]
+        public async Task<Guid> Create([FromBody] CreateRequestCommand request)
+        {
+            // Client ip
+            _logger.LogInformation($"Client IP: {HttpContext.Connection.RemoteIpAddress?.ToString()}"); 
+
+            var res = await _mediator.Send(request);
+
+            return res;
+        }
+        [HttpPost]
+        [Route("GetRequestByClientIdAndDepAdress")]
+        public async Task<RequestStatusDto> GetRequestByClientIdAndDepAdress([FromBody] GetRequestStatusByClientIdAndDepAddressQuery request)
+        {
+            // Client ip
+            _logger.LogInformation($"Client IP: {HttpContext.Connection.RemoteIpAddress?.ToString()}");
+
+            var res = await _mediator.Send(request);
+
+            return res;
+        }
+
     }
 }

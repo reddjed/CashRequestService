@@ -1,3 +1,4 @@
+using CashRequestApi.Core.Requests.Commands.CreateRequest;
 using CashRequestApi.Options;
 using CashRequestApi.Services;
 using FluentValidation;
@@ -28,26 +29,29 @@ builder.Services.AddSwaggerGen();
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
-builder.Services.AddSingleton<ConnectionFactory>(provider =>
+//builder.Services.AddSingleton<ConnectionFactory>(provider =>
+//{
+//    var factory = new ConnectionFactory()
+//    {
+
+//        HostName = "rabbitmq",
+//        UserName = "guest",
+//        Password = "guest",
+//    };
+//    return factory;
+//});
+
+builder.Services.AddScoped<RabbitMQService>();
+
+builder.Services.AddMassTransit(x =>
 {
-    var factory = new ConnectionFactory()
-    {
-        
-        HostName = "rabbitmq",
-        UserName = "guest",
-        Password = "guest",
-    };
-    return factory;
-});
+    x.AddRequestClient<CreateRequestCommand>();
 
-//TODO: i think it should be scoped, check this
-builder.Services.AddSingleton<RabbitMQService>();
-
-builder.Services.AddMassTransit(x => 
     x.UsingRabbitMq((context, config) =>
     {
         config.Host("rabbitmq");
-    }));
+    });
+}); 
 
 //mediator
 builder.Services.AddMediatR(cfg =>

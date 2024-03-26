@@ -1,18 +1,19 @@
 ﻿using CashRequestApi.Options;
 using CashRequestApi.Services;
+using CashRequestShared.Dto;
 using MediatR;
 using Microsoft.Extensions.Options;
 
-namespace CashRequestApi.Core.Requests.Commands.CreateRequest
+namespace CashRequestApi.Core.Requests.Queries.GetRequestStatusById
 {
-    public class CreateRequestCommandHandler : IRequestHandler<CreateRequestCommand, Guid>
+    public class GetRequestStatusByIdQueryHandler : IRequestHandler<GetRequestStatusByIdQuery, RequestStatusDto>
     {
-        private readonly ILogger<CreateRequestCommandHandler> _logger;
+        private readonly ILogger<GetRequestStatusByIdQueryHandler> _logger;
         private readonly RabbitMQService _rabbitMqService;
         private readonly RabbitQueuesConfig _rabbitQueues;
 
-        public CreateRequestCommandHandler(
-            ILogger<CreateRequestCommandHandler> logger,
+        public GetRequestStatusByIdQueryHandler(
+            ILogger<GetRequestStatusByIdQueryHandler> logger,
             RabbitMQService rabbitMqService,
             IOptionsMonitor<RabbitQueuesConfig> rabbitQueues)
         {
@@ -20,13 +21,12 @@ namespace CashRequestApi.Core.Requests.Commands.CreateRequest
             _rabbitMqService = rabbitMqService;
             _rabbitQueues = rabbitQueues.CurrentValue;
         }
-
-        public async Task<Guid> Handle(CreateRequestCommand request, CancellationToken cancellationToken)
+        public async Task<RequestStatusDto> Handle(GetRequestStatusByIdQuery request, CancellationToken cancellationToken)
         {
             try
             {
                 // send by RabbitMQ
-                var res = await _rabbitMqService.SendMessageAsync(_rabbitQueues.CreateRequestCommandQueue, request);
+                var res = await _rabbitMqService.SendRequestByIdQueryAsync(_rabbitQueues.GetRequestStatusByIdQueue, request);
 
                 return res;
             }

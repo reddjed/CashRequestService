@@ -2,6 +2,6 @@
 {
     public class RabbitConfig
     {
-        public static string Section { get; set; } = "RabbitMQ";
+        public static string Section { get; } = "RabbitMQ";
     }
 }

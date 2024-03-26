@@ -14,24 +14,39 @@ services:
     volumes:
      - "rabbitmq_data:/data"
 
-  # mssql-db:
-  #   container_name: "mssql-db"
-  #   image: mcr.microsoft.com/mssql/server:latest
-  #   ports:
-  #     - "14430:1337"
-  #   volumes:
-  #   - "mssql_data:/var/opt/mssql"
-  #   environment:
-  #     ACCEPT_EULA: "Y"
-  #     SA_PASSWORD: "kerya1337"
+  mssql-db:
+    container_name: "mssql-db"
+    image: mcr.microsoft.com/mssql/server:latest
+    networks:
+    - default-network
+    ports:
+      - "1433:1433"
+    volumes:
+    - "mssql_data:/var/opt/mssql"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Secretpass1337"
+
+
+  mssql-db.configurator:
+    image: mcr.microsoft.com/mssql/server:latest
+    networks:
+    - default-network
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+    depends_on:
+     - mssql-db
+    command: >
+      bash -c '
+      /opt/mssql-tools/bin/sqlcmd -S mssql-db -U sa -P Secretpass1337 -d master -i docker-entrypoint-initdb.d/init.sql;
+      echo "All done!";
+      '
 
   cashrequest-api:
     container_name: "cashrequest-api"
     #image: ${DOCKER_REGISTRY-}cashrequestapi
     networks:
     - default-network
-    external_links:
-    - rabbitmq 
     build:
       context: .
       dockerfile: CashRequestApi/Dockerfile
@@ -51,6 +66,27 @@ services:
     depends_on:
     - rabbitmq
 
+  cashrequestprocessor-api:
+   container_name: "cashrequestprocessor-api"
+   #image: ${DOCKER_REGISTRY-}cashrequestapi
+   networks:
+   - default-network
+   build:
+     context: .
+     dockerfile: CashRequestProcessor/Dockerfile
+   ports:
+   - 5004:8080
+   - 5005:8081
+   - 5006:443
+    
+   environment:
+   - ASPNETCORE_ENVIRONMENT=Development
+   # volumes:
+   #   - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+   #   - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+   depends_on:
+   - rabbitmq
+
 volumes:
     rabbitmq_data:
     mssql_data:
@@ -58,3 +94,4 @@ volumes:
 networks:
   default-network:
    external: true
+   driver: bridge

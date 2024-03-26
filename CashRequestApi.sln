@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CashRequestApi", "CashReque
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{2D4E3F21-2797-4197-8A15-545F8B0C0599}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CashRequestProcessor", "CashRequestProcessor\CashRequestProcessor.csproj", "{8329FB8B-F1FF-4408-A67C-6942B210E053}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CashRequestShared", "CashRequestShared\CashRequestShared.csproj", "{374D7387-6FB2-4608-A38D-9860C4B66328}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{2D4E3F21-2797-4197-8A15-545F8B0C0599}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D4E3F21-2797-4197-8A15-545F8B0C0599}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D4E3F21-2797-4197-8A15-545F8B0C0599}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8329FB8B-F1FF-4408-A67C-6942B210E053}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8329FB8B-F1FF-4408-A67C-6942B210E053}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8329FB8B-F1FF-4408-A67C-6942B210E053}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8329FB8B-F1FF-4408-A67C-6942B210E053}.Release|Any CPU.Build.0 = Release|Any CPU
+		{374D7387-6FB2-4608-A38D-9860C4B66328}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{374D7387-6FB2-4608-A38D-9860C4B66328}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{374D7387-6FB2-4608-A38D-9860C4B66328}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{374D7387-6FB2-4608-A38D-9860C4B66328}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
